@@ -1,0 +1,12 @@
+**/node_modules/
+**/target/
+**/dist/
+**/.angular/
+**/data/
+**/*.mv.db
+**/*.trace.db
+.env
+.env.*
+.DS_Store
+
+backend/src/main/resources/static/

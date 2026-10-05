@@ -87,12 +87,12 @@ npm run test:e2e
 ```
 
 - **18 pruebas Java**: validación, pesos decimales, rutinas, edición, borrado, historial y errores 404.
-- **12 pruebas unitarias frontend**: volumen, récord, pesos cero, decimales, entradas inválidas y parser OCR de días/rangos/unidades.
+- **16 pruebas unitarias frontend**: validación de usuario/contraseña, volumen, récord, pesos cero, decimales, entradas inválidas y parser OCR de días/rangos/unidades.
 - **E2E Playwright** contra Spring Boot real: registro, cookies de sesión, calendario, sesión de entrenamiento, recuperar borrador, historial/gráfico, logout y segunda cuenta. Comprueba aislamiento y acceso por ID ajeno denegado.
 - Verifica ausencia de desbordamiento horizontal en 320, 390, 768 y 1440 px, y errores de consola.
-- CI ejecuta compilación, pruebas y E2E. No se ha simulado un resultado de CI remoto.
+- CI ejecuta compilación, pruebas y E2E. Los resultados remotos se pueden consultar en la pestaña Actions del repositorio.
 
-El E2E usa base en memoria y puertos 18081/14200, no tu base de entrenamiento. Genera capturas en `docs/`. Con `OCR_IMAGE=/ruta/foto.jpg PRODUCTION=1 npm run test:e2e` comprueba OCR local y ejecución sobre el JAR con CSP. El modelo español y WASM se incluyen en `frontend/public/ocr/`; la foto de Samuel no está en el repositorio.
+El E2E usa base en memoria y puertos 18081/14200, no tu base de entrenamiento. Genera capturas en `docs/`. Con `OCR_IMAGE=/ruta/foto.jpg PRODUCTION=1 npm run test:e2e` comprueba OCR local y ejecución sobre el JAR con CSP. El modelo español y WASM se incluyen en `frontend/public/ocr/`; La foto de una rutina usada para probar OCR no está en el repositorio; el avatar personalizado sí.
 
 ## Arquitectura
 
@@ -105,7 +105,7 @@ REST controller ── Jakarta Validation
 Servicio transaccional
       │ JDBC + consultas parametrizadas
       ▼
-H2 persistente (archivo local)
+H2 persistente en local / PostgreSQL en producción
 ```
 
 ```text
@@ -151,11 +151,11 @@ Cuentas independientes, **BCrypt coste 12** para contraseñas, sesión server-si
 
 Usuarios: 3–40 caracteres (`a-z`, números, `_`, `-`, `.`), normalizados a minúsculas. Contraseña: 12–72 caracteres y máximo 72 bytes UTF-8 por BCrypt. No hay recuperación de contraseña todavía. No hay cuenta de administrador ni contraseña precargada.
 
-El servidor escucha en **127.0.0.1** por defecto y Compose solo publica en localhost. No hay hosting contratado, publicación online ni gastos. Las pruebas han verificado el JAR; Docker está preparado pero no se ha ejecutado aquí.
+El servidor escucha en **127.0.0.1** por defecto y Compose solo publica en localhost. La app está publicada con Vercel Hobby, Render Free y Neon Free, sin tarjeta. Render construye y ejecuta el Dockerfile de la raíz del repositorio. En producción escucha en 0.0.0.0 y usa PostgreSQL externo; el disco de Render no guarda la base de datos.
 
-Antes de alojarlo para otras personas: HTTPS, `COOKIE_SECURE=true`, proxy seguro, backups, política de privacidad, recuperación de cuentas, límites de registro/almacenamiento, revisión de dependencias y una base de datos administrada. Las sesiones están en memoria: reiniciar el servidor cierra sesiones. H2 sirve para un proceso pequeño, no para múltiples instancias. Se ha probado aislamiento funcional, no se ha hecho una auditoría de seguridad independiente. No afirmar que es invulnerable.
+El despliegue actual tiene HTTPS, cookie Secure con perfil prod, proxy /api y PostgreSQL administrado. Antes de ampliar el uso: backups probados, política de privacidad, recuperación de cuentas, límites de registro/almacenamiento y revisión de dependencias. Las sesiones están en memoria: reiniciar el servidor cierra sesiones. H2 sirve para un proceso pequeño, no para múltiples instancias. Se ha probado aislamiento funcional, no se ha hecho una auditoría de seguridad independiente. No afirmar que es invulnerable.
 
-Variables: `BIND_ADDRESS`, `PORT`, `DB_URL`, `DB_PASSWORD`, `COOKIE_SECURE`. No poner claves en Git. Cambiar el bind a `0.0.0.0` hace accesible el servidor a la red; no hacerlo sin preparar seguridad de despliegue.
+Variables: `BIND_ADDRESS`, `PORT`, `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, `COOKIE_SECURE`, `SPRING_PROFILES_ACTIVE`. No poner claves en Git. Cambiar el bind a `0.0.0.0` hace accesible el servidor a la red; no hacerlo sin preparar seguridad de despliegue.
 
 Los borradores quedan en localStorage con clave por usuario; no están cifrados y pueden permanecer al salir. Evita dispositivos compartidos. El JSON exportado contiene tus sesiones: guárdalo en privado. La exportación de historial no tiene restauración automática. Copia el archivo H2 solo con el servidor apagado.
 
@@ -183,3 +183,7 @@ La imagen personalizada y los personajes, marcas y recursos de terceros no queda
 El proyecto incluye driver PostgreSQL y SQL compatible, probado con PostgreSQL 14 real en E2E. Para Render Free usa el Dockerfile, `SPRING_PROFILES_ACTIVE=prod`, `DB_URL=jdbc:postgresql://HOST/BASE?sslmode=require`, `DB_USERNAME` y `DB_PASSWORD` como secretos de entorno. No uses H2 sobre disco efímero para datos que quieras conservar. El proceso permite ajustar `JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=70.0` para memoria limitada.
 
 Fuentes oficiales consultadas: https://render.com/docs/free y https://neon.com/pricing . Render Free duerme tras 15 minutos y su Postgres gratuito caduca en 30 días. Neon Free no es una prueba temporal, no exige tarjeta y tiene límites de cómputo/almacenamiento; revisa sus condiciones actuales antes de crear el servicio. No se incluyen credenciales ni una base ajena en el proyecto.
+
+## Para explicar el proyecto
+
+Lee [la guía de entrevista](docs/ENTREVISTA.md): decisiones, límites y respuestas cortas. La implementación se preparó con ayuda de un asistente de IA; no implica que su propietario domine todo el código.

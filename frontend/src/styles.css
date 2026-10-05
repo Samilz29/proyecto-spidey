@@ -12,3 +12,5 @@
 footer{flex-direction:column;gap:14px;line-height:1.6}footer>div{display:flex;justify-content:space-between;gap:12px}.fan-notice{font-size:11px;letter-spacing:0;max-width:740px;margin:0;color:#a6bbd8}
 @media(max-width:600px){.mascot{width:110px;height:244px;margin:0 0 0 4px}.hero>div{min-width:0}.hero h1{font-size:31px}.hero .eyebrow{line-height:1.6;letter-spacing:1px}footer>div{display:block}.fan-notice{margin-top:14px}}
 @media(prefers-reduced-motion:reduce){.mascot{animation:none;transform:none}}
+
+.auth .field-help{font-size:12px;margin:-6px 0 16px}.auth .field-error{color:#ff8e9d;font-size:13px;margin:-6px 0 16px}input[aria-invalid=true]{border-color:#ff536c}

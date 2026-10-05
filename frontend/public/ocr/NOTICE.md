@@ -1,0 +1,1 @@
+OCR resources: Tesseract.js (Apache-2.0), Tesseract.js-core (Apache-2.0), Spanish traineddata from Tesseract tessdata / Project Naptha distribution (Apache-2.0). These are third-party OCR assets, not a custom AI model. Sources: https://github.com/naptha/tesseract.js and https://github.com/tesseract-ocr/tessdata .

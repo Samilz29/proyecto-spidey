@@ -1,33 +1,39 @@
-# GymLog
+# Proyecto Spidey
 
-**Tu siguiente repetición.** Un diario de entrenamiento mobile-first en español, construido con **Java 21 + Spring Boot 4 + Angular 22**.
+**Un poco más fuerte cada día.** Un diario de entrenamiento multiusuario mobile-first en español, construido con **Java 21 + Spring Boot 4 + Angular 22**.
 
 Rutinas, pesos por serie y progreso sin hojas de cálculo. Proyecto de portfolio con API REST, persistencia SQL, validación y pruebas de extremo a extremo.
 
 ## Capturas
 
-Datos ilustrativos, no registros personales.
+Datos de prueba, no registros personales. Mascota vectorial original, con degradados y sombras, cinta deportiva, idle y saludo. No contiene arte, logos ni recursos oficiales de Marvel.
 
-| Registro móvil | Progreso móvil |
+| Inicio móvil | Entrenamiento móvil |
 | --- | --- |
-| ![Registro por serie en móvil](docs/mobile-session.png) | ![Progreso por ejercicio en móvil](docs/mobile-progress.png) |
+| ![Inicio y misión del día](docs/mobile-home.png) | ![Registro por serie en móvil](docs/mobile-session.png) |
 
-![Progreso en escritorio](docs/desktop-progress.png)
+![Inicio en escritorio](docs/desktop-home.png)
+![Progreso semanal](docs/desktop-progress.png)
 
 ## Qué puedes hacer
 
-- Crear, editar y borrar rutinas con ejercicios, series y repeticiones objetivo.
+- Crear una cuenta e iniciar/cerrar sesión. Cada cuenta empieza vacía y sus datos están aislados.
+- Inicio con "HOY ES LUNES" y la rutina asignada a ese día.
+- Plan semanal por día de la semana y calendario mensual con excepciones por fecha.
+- Mascota motivacional original. No es un asesor médico ni un chatbot IA.
+- Subir una foto: OCR local gratis con Tesseract.js y modelo español incluido. La imagen no se envía a una API. El texto se convierte en borradores por día que debes revisar y guardar uno a uno.
+- Pegar texto o importar rutinas JSON si prefieres no subir una imagen.
+- Crear, editar y borrar rutinas con ejercicios, series, rangos de cantidad, unidades (reps/metros/segundos), por lado y RIR objetivo.
 - Iniciar una sesión con los últimos pesos registrados precargados.
-- Registrar peso en kg y repeticiones de cada serie; añadir o quitar series.
+- Registrar peso en kg, cantidad y RIR real de cada serie; añadir o quitar series.
 - Marcar series completadas. Solo esas se guardan al terminar.
 - Recuperar una sesión en curso al recargar, gracias al borrador local.
 - Elegir la fecha y añadir notas.
 - Consultar el historial completo y borrar una sesión con confirmación.
-- Ver el mayor peso de cada sesión por ejercicio y tu marca más alta registrada.
-- Consultar volumen total (kg × repeticiones) y exportar un backup JSON.
-- Probar la interfaz sin API con `?demo=1`: persistencia solo en el navegador.
+- Ver el mayor peso de cada semana (lunes a domingo) por ejercicio y tu marca más alta registrada.
+- Consultar volumen total (kg × repeticiones, solo ejercicios de reps; no incluye metros/segundos) y exportar un backup JSON.
 
-**No incluye** cuentas, sincronización entre dispositivos, importación JSON, recomendaciones médicas ni estimaciones de 1RM. El peso de una máquina no se debe comparar con otra. Los ejercicios se agrupan por nombre exacto: renombrarlos separa sus series en el gráfico.
+**No incluye** recuperación de contraseña, verificación de email, importación de backups de historial, recomendaciones médicas ni estimaciones de 1RM. No hay rutina personal precargada. Cada persona crea la suya. El OCR puede omitir líneas o leer mal cifras y nunca guarda sin revisión. No es Gemini ni un modelo generativo. El peso de una máquina no se debe comparar con otra. Los ejercicios se agrupan por nombre exacto: renombrarlos separa sus series en el gráfico.
 
 ## Arranque rápido
 
@@ -80,13 +86,13 @@ npx playwright install chromium
 npm run test:e2e
 ```
 
-- **11 pruebas Java**: validación, pesos decimales, rutinas, edición, borrado, historial y errores 404.
-- **6 pruebas unitarias frontend**: volumen, récord, pesos cero, decimales y entradas inválidas.
-- **E2E Playwright** contra Spring Boot real: crear rutina, iniciar sesión, recuperar borrador, guardar series completadas, historial, gráfico, editar y rechazo de pesos negativos.
+- **18 pruebas Java**: validación, pesos decimales, rutinas, edición, borrado, historial y errores 404.
+- **12 pruebas unitarias frontend**: volumen, récord, pesos cero, decimales, entradas inválidas y parser OCR de días/rangos/unidades.
+- **E2E Playwright** contra Spring Boot real: registro, cookies de sesión, calendario, sesión de entrenamiento, recuperar borrador, historial/gráfico, logout y segunda cuenta. Comprueba aislamiento y acceso por ID ajeno denegado.
 - Verifica ausencia de desbordamiento horizontal en 320, 390, 768 y 1440 px, y errores de consola.
 - CI ejecuta compilación, pruebas y E2E. No se ha simulado un resultado de CI remoto.
 
-El E2E usa base en memoria y puertos 18081/14200, no tu base de entrenamiento. Genera capturas en `docs/`.
+El E2E usa base en memoria y puertos 18081/14200, no tu base de entrenamiento. Genera capturas en `docs/`. Con `OCR_IMAGE=/ruta/foto.jpg PRODUCTION=1 npm run test:e2e` comprueba OCR local y ejecución sobre el JAR con CSP. El modelo español y WASM se incluyen en `frontend/public/ocr/`; la foto de Samuel no está en el repositorio.
 
 ## Arquitectura
 
@@ -108,6 +114,8 @@ backend/src/main/java/com/samilz/gymlog/
   GymController.java      API REST
   GymService.java         Reglas y transacciones
   Models.java             DTOs y validación
+  SecurityConfig.java     Sesiones, CSRF y cabeceras
+  AuthController.java     Registro/login/logout
 backend/src/main/resources/
   schema.sql              Tablas y claves foráneas
 frontend/src/
@@ -121,6 +129,13 @@ frontend/src/
 
 | Método | Ruta | Función |
 | --- | --- | --- |
+| GET | `/api/auth/csrf` | Token CSRF |
+| POST | `/api/auth/register` | Crear cuenta |
+| POST | `/api/auth/login` | Entrar |
+| POST | `/api/auth/logout` | Salir |
+| GET | `/api/auth/me` | Usuario actual |
+| PUT | `/api/weekly` | Plan semanal |
+| PUT | `/api/plans` | Excepción por fecha |
 | GET | `/api/state` | Rutinas e historial |
 | POST | `/api/routines` | Crear rutina |
 | PUT | `/api/routines/{id}` | Reemplazar rutina |
@@ -132,23 +147,30 @@ Los ID se generan en el servidor. Las escrituras son transaccionales. Se validan
 
 ## Privacidad y despliegue
 
-**V1 es una app personal local, no un servicio multiusuario. No publiques la API en internet sin añadir autenticación y autorización.**
+Cuentas independientes, **BCrypt coste 12** para contraseñas, sesión server-side, cookie HttpOnly + SameSite Strict, protección CSRF en escrituras y consultas SQL parametrizadas. El ID del usuario procede de la sesión, nunca del cuerpo de la petición. Las rutas de rutinas, sesiones y planes verifican propietario. Limitación simple de intentos: 20 por IP en 15 minutos, en memoria del proceso. No usarlo como único sistema antiabuso de producción.
 
-El servidor escucha en `127.0.0.1` por defecto y Compose solo publica el puerto en localhost. H2 Console no está habilitada. No hay credenciales, tokens ni registros reales en el código. Las fuentes tipográficas se cargan desde Google Fonts; hay fuentes de sistema de respaldo si no hay internet.
+Usuarios: 3–40 caracteres (`a-z`, números, `_`, `-`, `.`), normalizados a minúsculas. Contraseña: 12–72 caracteres y máximo 72 bytes UTF-8 por BCrypt. No hay recuperación de contraseña todavía. No hay cuenta de administrador ni contraseña precargada.
 
-`BIND_ADDRESS`, `PORT`, `DB_URL` y `DB_PASSWORD` se pueden configurar por entorno. Cambiar el bind a `0.0.0.0` fuera del contenedor expone la API a la red: todos los visitantes tendrían acceso a todos los datos. El borrador y la demo se guardan en el navegador sin cifrado; no los uses en un equipo compartido.
+El servidor escucha en **127.0.0.1** por defecto y Compose solo publica en localhost. No hay hosting contratado, publicación online ni gastos. Las pruebas han verificado el JAR; Docker está preparado pero no se ha ejecutado aquí.
 
-El JSON exportado contiene tus sesiones: guárdalo en privado. También puedes hacer copia del archivo H2 **con el servidor apagado**. La exportación JSON es de consulta/backup, no tiene restauración automática en esta versión.
+Antes de alojarlo para otras personas: HTTPS, `COOKIE_SECURE=true`, proxy seguro, backups, política de privacidad, recuperación de cuentas, límites de registro/almacenamiento, revisión de dependencias y una base de datos administrada. Las sesiones están en memoria: reiniciar el servidor cierra sesiones. H2 sirve para un proceso pequeño, no para múltiples instancias. Se ha probado aislamiento funcional, no se ha hecho una auditoría de seguridad independiente. No afirmar que es invulnerable.
 
-No hay hosting contratado ni pagos. El Dockerfile está preparado, pero se debe probar en un equipo con Docker y configurar seguridad antes de un despliegue remoto.
+Variables: `BIND_ADDRESS`, `PORT`, `DB_URL`, `DB_PASSWORD`, `COOKIE_SECURE`. No poner claves en Git. Cambiar el bind a `0.0.0.0` hace accesible el servidor a la red; no hacerlo sin preparar seguridad de despliegue.
+
+Los borradores quedan en localStorage con clave por usuario; no están cifrados y pueden permanecer al salir. Evita dispositivos compartidos. El JSON exportado contiene tus sesiones: guárdalo en privado. La exportación de historial no tiene restauración automática. Copia el archivo H2 solo con el servidor apagado.
+
+El OCR funciona en tu navegador, usando ficheros locales servidos por la app; no lleva API key ni factura por foto. Está basado en reconocimiento de texto y expresiones de series/rangos, no entiende cualquier diseño de rutina como un chatbot. Revisa todos los borradores. Las fuentes se descargan desde Google Fonts, con fallback de sistema.
+
+La v2 usa tablas nuevas por usuario. **No migra automáticamente el historial anónimo de v1**: no se asigna a una cuenta sin confirmar propietario. Guarda tu backup v1 antes de cambiar.
 
 ## Siguiente versión
 
-- Autenticación, perfiles y sincronización segura.
+- Recuperación de contraseña, verificación y administración de cuentas.
 - Restauración validada de backups JSON.
 - ID estables de ejercicios para mantener progreso al renombrarlos.
 - Paginación y estadísticas semanales para historiales grandes.
 - Temporizador de descansos y PWA offline.
+- Chatbot con proveedor elegido por el usuario, solo tras confirmar privacidad y coste.
 
 ## Créditos
 

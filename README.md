@@ -6,7 +6,7 @@ Rutinas, pesos por serie y progreso sin hojas de cálculo. Proyecto de portfolio
 
 ## Capturas
 
-Datos de prueba, no registros personales. Mascota vectorial original, con degradados y sombras, cinta deportiva, idle y saludo. No contiene arte, logos ni recursos oficiales de Marvel.
+Las capturas usan datos de prueba, no registros personales. El avatar de Inicio es la figura proporcionada por Samuel, recortada con fondo transparente y optimizada en WebP. Tiene una animación suave que se desactiva con la preferencia de movimiento reducido.
 
 | Inicio móvil | Entrenamiento móvil |
 | --- | --- |
@@ -20,7 +20,7 @@ Datos de prueba, no registros personales. Mascota vectorial original, con degrad
 - Crear una cuenta e iniciar/cerrar sesión. Cada cuenta empieza vacía y sus datos están aislados.
 - Inicio con "HOY ES LUNES" y la rutina asignada a ese día.
 - Plan semanal por día de la semana y calendario mensual con excepciones por fecha.
-- Mascota motivacional original. No es un asesor médico ni un chatbot IA.
+- Avatar motivacional personalizado. No es un asesor médico ni un chatbot IA.
 - Subir una foto: OCR local gratis con Tesseract.js y modelo español incluido. La imagen no se envía a una API. El texto se convierte en borradores por día que debes revisar y guardar uno a uno.
 - Pegar texto o importar rutinas JSON si prefieres no subir una imagen.
 - Crear, editar y borrar rutinas con ejercicios, series, rangos de cantidad, unidades (reps/metros/segundos), por lado y RIR objetivo.
@@ -174,7 +174,9 @@ La v2 usa tablas nuevas por usuario. **No migra automáticamente el historial an
 
 ## Créditos
 
-Proyecto preparado para el portfolio de Samuel Lozano. Sin licencia abierta añadida: publicar el código para consulta no concede por sí solo permiso para reutilizarlo.
+Proyecto personal sin ánimo de lucro, hecho por fans; no afiliado a Marvel/Disney. Spider-Man y su imagen pertenecen a sus dueños. Código libre.
+
+La imagen personalizada y los personajes, marcas y recursos de terceros no quedan liberados por este aviso. El repositorio permanece privado hasta que Samuel revise y autorice su publicación.
 
 ## Backend gratuito con datos persistentes
 

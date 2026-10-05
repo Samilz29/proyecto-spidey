@@ -176,14 +176,12 @@ La v2 usa tablas nuevas por usuario. **No migra automáticamente el historial an
 
 Proyecto personal sin ánimo de lucro, hecho por fans; no afiliado a Marvel/Disney. Spider-Man y su imagen pertenecen a sus dueños. Código libre.
 
-La imagen personalizada y los personajes, marcas y recursos de terceros no quedan liberados por este aviso. El repositorio permanece privado hasta que Samuel revise y autorice su publicación.
+La imagen personalizada y los personajes, marcas y recursos de terceros no quedan liberados por este aviso.
+
+Proyecto personal de Samuel Lozano para repasar lo aprendido en las prácticas en NTT DATA (Java, Spring Boot, JUnit/Mockito).
 
 ## Backend gratuito con datos persistentes
 
 El proyecto incluye driver PostgreSQL y SQL compatible, probado con PostgreSQL 14 real en E2E. Para Render Free usa el Dockerfile, `SPRING_PROFILES_ACTIVE=prod`, `DB_URL=jdbc:postgresql://HOST/BASE?sslmode=require`, `DB_USERNAME` y `DB_PASSWORD` como secretos de entorno. No uses H2 sobre disco efímero para datos que quieras conservar. El proceso permite ajustar `JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=70.0` para memoria limitada.
 
 Fuentes oficiales consultadas: https://render.com/docs/free y https://neon.com/pricing . Render Free duerme tras 15 minutos y su Postgres gratuito caduca en 30 días. Neon Free no es una prueba temporal, no exige tarjeta y tiene límites de cómputo/almacenamiento; revisa sus condiciones actuales antes de crear el servicio. No se incluyen credenciales ni una base ajena en el proyecto.
-
-## Para explicar el proyecto
-
-Lee [la guía de entrevista](docs/ENTREVISTA.md): decisiones, límites y respuestas cortas. La implementación se preparó con ayuda de un asistente de IA; no implica que su propietario domine todo el código.

@@ -175,3 +175,9 @@ La v2 usa tablas nuevas por usuario. **No migra automáticamente el historial an
 ## Créditos
 
 Proyecto preparado para el portfolio de Samuel Lozano. Sin licencia abierta añadida: publicar el código para consulta no concede por sí solo permiso para reutilizarlo.
+
+## Backend gratuito con datos persistentes
+
+El proyecto incluye driver PostgreSQL y SQL compatible, probado con PostgreSQL 14 real en E2E. Para Render Free usa el Dockerfile, `SPRING_PROFILES_ACTIVE=prod`, `DB_URL=jdbc:postgresql://HOST/BASE?sslmode=require`, `DB_USERNAME` y `DB_PASSWORD` como secretos de entorno. No uses H2 sobre disco efímero para datos que quieras conservar. El proceso permite ajustar `JAVA_TOOL_OPTIONS=-XX:MaxRAMPercentage=70.0` para memoria limitada.
+
+Fuentes oficiales consultadas: https://render.com/docs/free y https://neon.com/pricing . Render Free duerme tras 15 minutos y su Postgres gratuito caduca en 30 días. Neon Free no es una prueba temporal, no exige tarjeta y tiene límites de cómputo/almacenamiento; revisa sus condiciones actuales antes de crear el servicio. No se incluyen credenciales ni una base ajena en el proyecto.

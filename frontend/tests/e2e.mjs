@@ -2,7 +2,7 @@ import {chromium} from '@playwright/test';
 import {spawn} from 'node:child_process';
 import {setTimeout as delay} from 'node:timers/promises';
 import assert from 'node:assert/strict';
-const backend=spawn(process.env.JAVA_HOME?process.env.JAVA_HOME+'/bin/java':'java',['-jar','../backend/target/gymlog-1.0.0.jar'],{env:{...process.env,PORT:'18081',DB_URL:'jdbc:h2:mem:e2e;DB_CLOSE_DELAY=-1'},stdio:'ignore'});
+const backend=spawn(process.env.JAVA_HOME?process.env.JAVA_HOME+'/bin/java':'java',['-jar','../backend/target/gymlog-1.0.0.jar'],{env:{...process.env,PORT:'18081',DB_URL:process.env.TEST_DB_URL||'jdbc:h2:mem:e2e;DB_CLOSE_DELAY=-1'},stdio:'ignore'});
 const frontend=spawn('./node_modules/.bin/ng',['serve','--host','127.0.0.1','--proxy-config','proxy.e2e.json','--port','14200'],{stdio:'ignore',detached:true});let browser;
 try{
 for(let i=0;i<60;i++){try{const r=await fetch('http://127.0.0.1:14200/api/auth/csrf');if(r.ok)break;}catch{}await delay(500);}
